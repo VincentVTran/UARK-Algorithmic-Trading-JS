@@ -1,0 +1,15 @@
+{
+  "name": "bitcointrading",
+  "version": "1.0.0",
+  "description": "A nodejs trading bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Trading",
+    "Algorithm"
+  ],
+  "author": "Vincent Tran",
+  "license": "ISC"
+}
