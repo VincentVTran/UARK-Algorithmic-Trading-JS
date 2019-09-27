@@ -5,14 +5,16 @@ class marketBot{
     constructor(){
         this.alpaca = new Alpaca(dataKey);
         this.client = this.alpaca.websocket;
+        this.setUp();
     }
 
     setUp(){
+        var clients = this.client;
         this.client.onConnect(function() {
             console.log("Connected")
-            this.client.subscribe(['trade_updates', 'account_updates', 'T.FB', 'Q.AAPL', 'A.FB', 'AM.AAPL'])
+            clients.subscribe(['trade_updates', 'account_updates', 'T.FB', 'Q.AAPL', 'A.FB', 'AM.AAPL'])
             setTimeout(() => {
-              this.client.disconnect()
+              clients.disconnect()
             }, 30 * 1000)
         });
         this.client.onDisconnect(() => {
@@ -40,6 +42,12 @@ class marketBot{
             console.log(`Stock agg min: ${subject}, ${data}`);
         });
         this.client.connect();
+    }
+
+    async getPrice(symbol, pastDays) {
+        const price = await this.alpaca.getBars('day',symbol,{limit: pastDays});
+        //console.log(price);
+        return price;
     }
 }
 

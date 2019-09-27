@@ -10,6 +10,7 @@ class tradingBot{
     }
 
     async submitOrder(quantity,stock,side) {
+        console.log(await this.alpaca.getClock()); //Checks time
         var prom = new Promise(async (resolve,reject) => {
           if(quantity > 0){
             await this.alpaca.createOrder({
@@ -32,6 +33,7 @@ class tradingBot{
             resolve(true);
           }
         });
+        //await this.alpaca.closeAllPositions();
         return prom;
     }
 }
