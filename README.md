@@ -1,3 +1,9 @@
 # Algorithm Trading Club 
 
-To run, type "node index.js"
+Requirments: <br>
+-Have node.js installed <br>
+
+
+To run: <br>
+-Type "npm install" <br>
+-Type "node index.js"
