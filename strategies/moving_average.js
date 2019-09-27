@@ -20,10 +20,10 @@ class movingAverage{
             //     break;
             // }
             const data  = await market_bot.getPrice('FB',1);
-            console.log("Current price: "+ data.FB[0].c); //Prints out current price      
-            
+            console.log("Current price: "+ data.FB[0].c); //Prints out current price   
         }
     }
+    
 }
 
 module.exports.movingAverage = movingAverage;

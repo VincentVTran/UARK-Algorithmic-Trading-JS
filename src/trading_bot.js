@@ -9,32 +9,39 @@ class tradingBot{
         });
     }
 
-    async submitOrder(quantity,stock,side) {
+    async submitOrder(quantity,company,side) {
         console.log(await this.alpaca.getClock()); //Checks time
         var prom = new Promise(async (resolve,reject) => {
           if(quantity > 0){
             await this.alpaca.createOrder({
-              symbol: stock,
+              symbol: company,
               qty: quantity,
               side: side,
               type: 'market',
               time_in_force: 'day',
             }).then(() => {
-              console.log("Market order of | " + quantity + " " + stock + " " + side + " | completed.");
+              console.log("Market order of | " + quantity + " " + company + " " + side + " | completed.");
               resolve(true);
             }).catch((err) => {
                 console.log(err);
-              console.log("Order of | " + quantity + " " + stock + " " + side + " | did not go through.");
+              console.log("Order of | " + quantity + " " + company + " " + side + " | did not go through.");
               resolve(false);
             });
           }
           else {
-            console.log("Quantity is <=0, order of | " + quantity + " " + stock + " " + side + " | not sent.");
+            console.log("Quantity is <=0, order of | " + quantity + " " + company + " " + side + " | not sent.");
             resolve(true);
           }
         });
         //await this.alpaca.closeAllPositions();
         return prom;
+    }
+
+    async sellOrder(company){
+      await this.alpaca.closePosition(company);
+      // console.log("Worked");
+      const previousStockInfo = await this.alpaca.getPosition(company);
+      console.log(previousStockInfo);
     }
 }
 
