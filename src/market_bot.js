@@ -2,7 +2,7 @@ const Alpaca = require('@alpacahq/alpaca-trade-api');
 const dataKey = require('../credentials/data.json');
 
 class marketBot{
-    constructor(){
+    constructor() {
         this.alpaca = new Alpaca(dataKey);
         this.client = this.alpaca.websocket;
         this.setUp();
