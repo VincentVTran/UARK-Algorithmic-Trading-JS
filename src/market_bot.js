@@ -44,8 +44,8 @@ class marketBot{
         this.client.connect();
     }
 
-    async getPrice(symbol, pastDays) {
-        const price = await this.alpaca.getBars('day',symbol,{limit: pastDays});
+    async getPrice(barDuration, symbol, pastDays) { //'minute' | '1Min' | '5Min' | '15Min' | 'day' | '1D' = Durations
+        const price = await this.alpaca.getBars(barDuration,symbol,{limit: pastDays});
         //console.log(price);
         return price;
     }

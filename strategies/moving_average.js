@@ -16,12 +16,13 @@ class movingAverage{
         while(true){
             const time = await this.alpaca.getClock;
             //If market is closed, break out of loop
-            if(!time.is_open){
-                console.log("Market is currently closed");
-                break;
-            }
-            const data  = await market_bot.getPrice('FB',1);
-            console.log("Current price: "+ data.FB[0].c); //Prints out current price   
+            // if(!time.is_open){
+            //     console.log("****** Market is currently closed ******");
+            //     break;
+            // }
+            const data  = await market_bot.getPrice("minute",'FB',1);
+            console.log(data.FB[0]); //Prints out current price   
+            console.log("\n");
         }
     }
     

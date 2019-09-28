@@ -9,6 +9,7 @@ class tradingBot{
         });
     }
 
+    //Completes transactions such as Buying and Selling
     async submitOrder(quantity,company,side) { // 1, "FB", "buy"
         console.log(await this.alpaca.getClock()); //Checks time
         var prom = new Promise(async (resolve,reject) => {
@@ -36,8 +37,15 @@ class tradingBot{
         return prom;
     }
 
-    async sellOrder(company){
-      await this.alpaca.closePosition(company);
+    sellOrders(company){
+      this.alpaca.closePosition(company).then(
+        (data) => console.log(data)
+      );
+    }
+
+    //Sells all shares
+    async sellAllOrders(company){
+      await this.alpaca.closeAllPositions();
       // console.log("Worked");
       const previousStockInfo = await this.alpaca.getPosition(company);
       console.log(previousStockInfo);
