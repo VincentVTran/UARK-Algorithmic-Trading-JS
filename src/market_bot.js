@@ -49,6 +49,12 @@ class marketBot{
         //console.log(price);
         return price;
     }
+
+    async getShares(symbol){
+
+    }
+
+  
 }
 
 module.exports.marketBot = marketBot;
