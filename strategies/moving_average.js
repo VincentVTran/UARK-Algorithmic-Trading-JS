@@ -12,87 +12,105 @@ class movingAverage{
     constructor(){
         this.alpaca = new Alpaca(dataKey);
     }
-
+    
     async run(){
-        //Defineing time and outputing a booling value to the while loop to test wheather the market is open or not
-        const time = await this.alpaca.getClock();
-        console.log("Market Open:");
-        console.log(time["is_open"]);
         
-        //Calculating the 15min moving average as MA15Avg
-        const MA15  = await market_bot.getPrice("minute",'SPY',15);
-        var MA15Total = 0;
-        var MA15Avg = 0;
-        for(var i=0; i< MA15.SPY.length; i++){
-            MA15Total += MA15.SPY[i]["o"];
-            // console.log("Current Open Price:",MA15.SPY[i]["o"]);
-            // console.log("Added Total:",MA15Total);
-            // console.log("\n");
-        }
-        MA15Avg = MA15Total/MA15.SPY.length;
+        //While loop that runs every second (micro secound I think honestly not sure)
+        while(true){
+            console.log("Working")
 
-        //Calculating the 30min moving average as MA30Avg
-        const MA30  = await market_bot.getPrice("minute",'SPY',30);
-        var MA30Total = 0;
-        var MA30Avg = 0;
-        for(var i=0; i< MA30.SPY.length; i++){
-            MA30Total += MA30.SPY[i]["o"];
-            // console.log("Current Open Price:",MA30.SPY[i]["o"]);
-            // console.log("Added Total:",MA30Total);
-            // console.log("\n");
-        }
-        MA30Avg = MA30Total/MA30.SPY.length;
+            /*******************************************************
+            Checking to make sure the market is open!
+            ********************************************************/
+            const time = await this.alpaca.getClock();
+            if(time.is_open){
+                console.log('\n',"****** Market is currently closed ******",'\n');
+                break;
+            }
 
-
-
-        console.log("\n");
-        console.log('15 min Moving Average:',MA15Avg); //Prints 15 min moving Average 
-        console.log('30 min Moving Average:',MA30Avg); //Prints 30 min moving Average  
-        console.log('MA15 > MA30 =',MA15Avg>MA30Avg);
-        console.log("Position = ?");
-        console.log("Buy = ",MA15Avg>MA30Avg,' (As long as you are not is a position already)');
-        console.log("\n");
-
-        const spyPosition = await this.alpaca.getPosition('SPY')
-        console.log(spyPosition);
+            /*******************************************************
+            Gets the Number a Shares of SPY and OrderSize
+            ********************************************************/
+            const spyPosition = await this.alpaca.getPosition('SPY')
+            //Gets Account Information
+            const account = await this.alpaca.getAccount();
+            //Setting the position Size to 10% of portfolio
+            var positionSize = account['portfolio_value'] * .1;
+            //Get the current Price of SPY to figure out the amount of shares we need to purchuse
+            const currentPrice  = await market_bot.getPrice("minute",'SPY',1);
+            var spyCurrentPrice = currentPrice.SPY[0]['o'];
+            //Setting the Order Size (Number of shares)
+            var shareOrderSize = positionSize / spyCurrentPrice
 
 
 
-        //const MA30  = await market_bot.getPrice("minute",'SPY',15);
-        
-        
-        //while(time["is_open"]==false){
-            
-            // const data  = await market_bot.getPrice("minute",'SPY',1);
-            // console.log(data.SPY[0]); //Prints out current price   
-            // console.log("\n");
+            /*******************************************************
+            Setting the 15 min Moving Average and the 30min Moving Average
+            *******************************************************/
+            //Part 1 (15 min Average)
+            //Calculating the 15min moving average as MA15Avg
+            const MA15  = await market_bot.getPrice("minute",'SPY',15);
+            var MA15Total = 0;
+            var MA15Avg = 0;
+            for(var i=0; i< MA15.SPY.length; i++){
+                MA15Total += MA15.SPY[i]["o"];
+            }
+            MA15Avg = MA15Total/MA15.SPY.length;
+    
+    
+            //Part 2 (30 min Average)
+            //Calculating the 30min moving average as MA30Avg
+            const MA30  = await market_bot.getPrice("minute",'SPY',30);
+            var MA30Total = 0;
+            var MA30Avg = 0;
+            for(var i=0; i< MA30.SPY.length; i++){
+                MA30Total += MA30.SPY[i]["o"];
+            }
+            MA30Avg = MA30Total/MA30.SPY.length;
 
-            // const MA_15 = await market_bot.getPrice("minute",'SPY',15);
-            
-            //trading_bot.submitOrder(100,"SPY","buy")
 
-        //}
-        
-        
-        
-        
-        
-        
-        
-        // while(true){
-        //     const time = await this.alpaca.getClock;
-        //     //If market is closed, break out of loop
-        //     // if(!time.is_open){
-        //     //     console.log("****** Market is currently closed ******");
-        //     //     break;
-        //     // }
-        //     trading_bot.submitOrder(100,"SPY","buy")
-            
-        //     const data  = await market_bot.getPrice("minute",'FB',1);
-        //     console.log(data.FB[0]); //Prints out current price   
-        //     console.log("\n");
-        // }
-    } 
+            /***************************************************
+            Buy/Sell logic
+            ****************************************************/
+            //if there is no postion in SPY we need to open one
+            if(spyPosition == 0) { 
+                if(MA15Avg>MA30Avg){ //if MA15 greater than MA30 buy 10% of portfolio
+                    trading_bot.submitOrder(shareOrderSize,"SPY","buy");
+                } else{
+                    trading_bot.submitOrder(shareOrderSize,"SPY","sell");
+                }
+
+            //If we have a postive number of shares of SPY (Meaning we are alreday long)    
+            } else if(spyPosition > 0) { 
+                if(MA15Avg<MA30Avg){
+                    // 1) Close Current Position
+                    trading_bot.sellAllOrders("SPY") // May need to fix this function
+                    // 2) Open a Short Position with 10% of portfolio
+                    trading_bot.submitOrder(shareOrderSize,"SPY","sell"); 
+                }else{
+                    //Do nothing just hold
+                }
+
+            //If we have a negative number of shares of SPY (Meaning we are alreday short)    
+            } else if(spyPosition < 0){ 
+                if(MA15Avg>MA30Avg){
+                    // 1) Close Current Position
+                    trading_bot.sellAllOrders("SPY") // May need to fix this function
+                    // 2) Open a Long Position with 10% of portfolio
+                    trading_bot.submitOrder(shareOrderSize,"SPY","buy"); 
+                }else{
+                    //Do nothing just hold
+                }
+            } 
+        }   
+    }
 }
 
+
 module.exports.movingAverage = movingAverage;
+
+        
+        
+        
+        
+    

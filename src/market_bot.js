@@ -50,7 +50,10 @@ class marketBot{
         return price;
     }
 
-    async getShares(symbol){
+    async getShares(symbol){ // getShares("SPY");
+    const Position = await this.alpaca.getPosition(symbol)
+    return Position 
+
 
     }
 
