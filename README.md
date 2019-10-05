@@ -5,8 +5,9 @@
 - Have node.js installed <br>
 
 ### To run: <br>
-- Type ```npm install``` to install all the dependencies <br>
-- Type ```node index.js``` to run the application <br>
+- Type ```npm install``` into the terminal install all the dependencies <br>
+- Change the API key in **credentials** -> **data.json** <br>
+- Type ```node index.js``` into the terminal to run the application <br>
 
 ## Project Structure 
 
