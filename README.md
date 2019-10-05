@@ -1,4 +1,5 @@
 # UARK Algorithm Trading Club Framework in JS
+![alt text](https://arkansasrazorbacks.com/wp-content/uploads/2018/10/University-of-Arkansas-Razorbacks.png "Razorback Logo")
 
 ### Requirments: <br>
 - Have node.js installed <br>
