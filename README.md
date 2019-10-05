@@ -1,4 +1,4 @@
-# Algorithm Trading Club 
+# UARK Algorithm Trading Club Framework in JS
 
 ### Requirments: <br>
 - Have node.js installed <br>
