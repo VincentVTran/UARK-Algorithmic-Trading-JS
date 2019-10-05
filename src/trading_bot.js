@@ -11,7 +11,8 @@ class tradingBot{
 
     //Completes transactions such as Buying and Selling
     async submitOrder(quantity,company,side) { // 1, "FB", "buy"
-        console.log(await this.alpaca.getClock()); //Checks time
+        const time = await this.alpaca.getClock();
+        //console.log(time); //Checks time
         var prom = new Promise(async (resolve,reject) => {
           if(quantity > 0){
             await this.alpaca.createOrder({
@@ -24,7 +25,7 @@ class tradingBot{
               console.log("Market order of | " + quantity + " " + company + " " + side + " | completed.");
               resolve(true);
             }).catch((err) => {
-                console.log(err);
+              console.log(err);
               console.log("Order of | " + quantity + " " + company + " " + side + " | did not go through.");
               resolve(false);
             });

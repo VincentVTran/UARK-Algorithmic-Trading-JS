@@ -18,7 +18,10 @@ class movingAverage{
         // trading_bot.submitOrder(1,'SPY','buy')
         //While loop that runs every second (micro secound I think honestly not sure)
         while(true){
-            console.log("Working")
+            //Waits [waitTime] amount of time before running loop again
+            //This is based on millisecond (Ex: 2000 = 2 seconds)
+            const waitTime = 2000; 
+            await market_bot.sleep(waitTime);
 
             /*******************************************************
             Checking to make sure the market is open!
@@ -32,15 +35,6 @@ class movingAverage{
             Gets the Number a Shares of SPY and OrderSize
             ********************************************************/
             
-
-            // try{
-            //     const spyPosition = await this.alpaca.getPosition('SPY')
-            // }catch(err) {
-            //     var spyPosition = 0 
-            //     console.log("Did not have a position in SPY")          
-            // }
-
-            //having problems with this one when there is no position in SPY
             var spyPosition;
             try{
                 spyPosition = await this.alpaca.getPosition('SPY');
@@ -55,10 +49,12 @@ class movingAverage{
             const account = await this.alpaca.getAccount();
             //Setting the position Size to 10% of portfolio
             var positionSize = account['portfolio_value'] * .1;
+            console.log("Position Size: " + positionSize);
             //Get the current Price of SPY to figure out the amount of shares we need to purchuse
             const currentPrice  = await market_bot.getPrice("minute",'SPY',1,"o");
             //Setting the Order Size (Number of shares)
-            var shareOrderSize = Math.round(positionSize / currentPrice)
+            var shareOrderSize = Math.round(positionSize / currentPrice[0]);
+            console.log("Share order size: " + shareOrderSize);
 
 
 
@@ -74,8 +70,8 @@ class movingAverage{
             //Calculating the 30min moving average as MA30Avg
             const MA30  = await market_bot.getPrice("minute",'SPY',30,"o");
             var MA30Avg = this.getAverage(MA30);
-            console.log("MA15=",MA15Avg)
-            console.log("MA30=",MA30Avg)
+            console.log("MA15= ",MA15Avg)
+            console.log("MA30= ",MA30Avg)
 
             console.log(MA15Avg>MA30Avg)
 
