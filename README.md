@@ -4,8 +4,8 @@
 - Have node.js installed <br>
 
 ### To run: <br>
-- Type ```npm install``` <br>
-- Type ```node index.js```
+- Type ```npm install``` to install all the dependencies <br>
+- Type ```node index.js``` to run the application <br>
 
 ## Project Structure 
 
