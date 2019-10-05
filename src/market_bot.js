@@ -44,17 +44,33 @@ class marketBot{
         this.client.connect();
     }
 
-    async getPrice(barDuration, symbol, pastDays) { //'minute' | '1Min' | '5Min' | '15Min' | 'day' | '1D' = Durations
+    async getPrice(barDuration, symbol, pastDays, dataType) { // barDuration = 'minute' | '1Min' | '5Min' | '15Min' | 'day' | '1D' ______ dataType = "t" | "o" | "h" | "l" | "c" | "v"
         const price = await this.alpaca.getBars(barDuration,symbol,{limit: pastDays});
-        //console.log(price);
-        return price;
+        const desiredData = await price[symbol];
+        var dataArray = [];
+        for(var i = 0;i<desiredData.length;i++){
+            dataArray.push(desiredData[i][dataType]);
+            //console.log(desiredData[i]);
+        }
+        //console.log(dataArray);
+        return dataArray;
     }
 
     async getShares(symbol){ // getShares("SPY");
-    const Position = await this.alpaca.getPosition(symbol)
-    return Position 
+        const Position = await this.alpaca.getPosition(symbol)
+        return Position 
+    }
 
-
+    async waitForMarketToOpen(){
+        while(true){
+            const time = await this.alpaca.getClock();
+            if(time.is_open){
+                console.log('\n',"******Market is Open ******",'\n');
+                break;
+            }
+            //console.log("Waiting");
+        }   
+        
     }
 
   

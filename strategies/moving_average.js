@@ -25,8 +25,7 @@ class movingAverage{
             ********************************************************/
             const time = await this.alpaca.getClock();
             if(!time.is_open){
-                console.log('\n',"****** Market is currently closed ******",'\n');
-                break;
+                await market_bot.waitForMarketToOpen();
             }
 
             /*******************************************************
@@ -42,7 +41,13 @@ class movingAverage{
             // }
 
             //having problems with this one when there is no position in SPY
-            const spyPosition = await this.alpaca.getPosition('SPY')
+            var spyPosition;
+            try{
+                spyPosition = await this.alpaca.getPosition('SPY');
+            }
+            catch(err){
+                spyPosition = 0;
+            }
             console.log('SPY Position: ',spyPosition['qty'])
 
 
@@ -51,10 +56,9 @@ class movingAverage{
             //Setting the position Size to 10% of portfolio
             var positionSize = account['portfolio_value'] * .1;
             //Get the current Price of SPY to figure out the amount of shares we need to purchuse
-            const currentPrice  = await market_bot.getPrice("minute",'SPY',1);
-            var spyCurrentPrice = currentPrice.SPY[0]['o'];
+            const currentPrice  = await market_bot.getPrice("minute",'SPY',1,"o");
             //Setting the Order Size (Number of shares)
-            var shareOrderSize = Math.round(positionSize / spyCurrentPrice)
+            var shareOrderSize = Math.round(positionSize / currentPrice)
 
 
 
@@ -63,26 +67,16 @@ class movingAverage{
             *******************************************************/
             //Part 1 (15 min Average)
             //Calculating the 15min moving average as MA15Avg
-            const MA15  = await market_bot.getPrice("minute",'SPY',15);
-            var MA15Total = 0;
-            var MA15Avg = 0;
-            for(var i=0; i< MA15.SPY.length; i++){
-                MA15Total += MA15.SPY[i]["o"];
-            }
-            MA15Avg = MA15Total/MA15.SPY.length;
-    
+            const MA15  = await market_bot.getPrice("minute",'SPY',15,"o");
+            const MA15Avg = this.getAverage(MA15);
     
             //Part 2 (30 min Average)
             //Calculating the 30min moving average as MA30Avg
-            const MA30  = await market_bot.getPrice("minute",'SPY',30);
-            var MA30Total = 0;
-            var MA30Avg = 0;
-            for(var i=0; i< MA30.SPY.length; i++){
-                MA30Total += MA30.SPY[i]["o"];
-            }
-            MA30Avg = (MA30Total/MA30.SPY.length);
+            const MA30  = await market_bot.getPrice("minute",'SPY',30,"o");
+            var MA30Avg = this.getAverage(MA30);
             console.log("MA15=",MA15Avg)
             console.log("MA30=",MA30Avg)
+
             console.log(MA15Avg>MA30Avg)
 
 
@@ -120,6 +114,16 @@ class movingAverage{
                }
             } 
         }  
+    }
+
+    getAverage(dataArray){
+        var Total = 0;
+        var Avg = 0;
+        for(var i=0; i< dataArray.length; i++){
+            Total += dataArray[i];
+        }
+        Avg = (Total/dataArray.length);
+        return Avg;
     }
 }
 

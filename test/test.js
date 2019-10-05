@@ -12,5 +12,7 @@ var market_bot = new marketBot();
 //         console.log(data);
 //     }
 // );
-trading_bot.sellOrders('FB');
+//trading_bot.sellOrders('FB');
+
+market_bot.getPrice("minute","SPY",10,"o");
 
