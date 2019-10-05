@@ -17,4 +17,4 @@
 - Retrieves data from the market such as position and price <br>
 
 ### Questions or concerns: <br>
-Email me at: VincentTran197120@gmail.com"
+Email me at: VincentTran197120@gmail.com
