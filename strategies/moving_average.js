@@ -28,7 +28,7 @@ class movingAverage{
             ********************************************************/
             const time = await this.alpaca.getClock();
             if(!time.is_open){
-               // await market_bot.waitForMarketToOpen();
+               await market_bot.waitForMarketToOpen();
             }
 
             /*******************************************************
